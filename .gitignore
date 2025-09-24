@@ -1,2 +1,4 @@
 .env
-API/client_secret_472917710799-9c3vcq3tuinbfus29gorlpttfnnpkcfa.apps.googleusercontent.com.json
+Majordome_Bieber/API/credentials.json
+.venv
+token.json
