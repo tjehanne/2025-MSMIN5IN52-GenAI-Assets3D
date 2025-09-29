@@ -9,7 +9,7 @@ Bienvenue sur le dépôt officiel pour la soumission du projet de fin de cours s
 3.  **Placez vos livrables :** Tous vos livrables (code, `README.md` de votre projet, slides, etc.) doivent être placés à l'intérieur de ce dossier.
 4.  **Soumettez via une Pull Request :** Une fois votre projet terminé, créez une Pull Request depuis votre fork vers le dépôt principal. La PR doit être soumise au plus tard **l'avant-veille de la présentation finale**.
 
-## Sujets Proposés
+## Sujets Proposé
 
 Voici quelques pistes de sujets. Vous êtes encouragés à proposer les vôtres.
 
