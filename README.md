@@ -1,113 +1,97 @@
-# Générateur de Contenu Structuré
+# Projet de Fin de Cours - IA Générative 2025
 
-## Description
-Application multi-agents qui prend des informations en langage naturel et génère des documents structurés au format PDF (CV, facture, rapport).
+Bienvenue sur le dépôt officiel pour la soumission du projet de fin de cours sur l'IA Générative.
 
-## Technologies
-- Python 3.8-3.12
-- Semantic Kernel
-- ReportLab
-- LangChain
-- OpenAI API
+## Instructions de Soumission
 
-## Installation
+1.  **Forkez ce dépôt :** Chaque groupe doit créer un "fork" de ce dépôt pour y travailler.
+2.  **Créez un dossier pour votre groupe :** À la racine de votre fork, créez un dossier unique pour votre groupe (ex: `groupe-alpha`, `projet-rag-chatbot`, etc.).
+3.  **Placez vos livrables :** Tous vos livrables (code, `README.md` de votre projet, slides, etc.) doivent être placés à l'intérieur de ce dossier.
+4.  **Soumettez via une Pull Request :** Une fois votre projet terminé, créez une Pull Request depuis votre fork vers le dépôt principal. La PR doit être soumise au plus tard **l'avant-veille de la présentation finale**.
 
-1. Clonez le dépôt
-2. Créez un environnement virtuel:
-```bash
-python -m venv venv
-```
+## Sujets Proposé
 
-3. Activez l'environnement:
-```bash
-# Windows
-venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
-```
+Voici quelques pistes de sujets. Vous êtes encouragés à proposer les vôtres.
 
-4. Installez les dépendances:
-```bash
-pip install -r requirements.txt
-```
+### Catégorie : Agents et Systèmes Intelligents
 
-5. Configurez les variables d'environnement:
-```bash
-cp .env.example .env
-```
+1.  **Agent RAG pour la documentation du cours**
+    *   Description : Créer un chatbot capable de répondre aux questions des étudiants sur le contenu du cours en se basant sur les supports fournis.
+    *   Technologies clés : RAG, Base de données vectorielle, LangChain/Semantic Kernel.
+    *   Difficulté : ⭐⭐ (Intermédiaire)
 
-Éditez le fichier `.env` et ajoutez votre clé API OpenAI:
-```
-OPENAI_API_KEY=votre_clé_api_ici
-OPENAI_MODEL=gpt-3.5-turbo
-```
+2.  **Agent autonome pour la planification de voyage**
+    *   Description : Créer un agent capable de planifier un itinéraire de voyage en utilisant des outils (recherche web, API) via du "Function Calling".
+    *   Technologies clés : IA Agentique, Function Calling, API externes.
+    *   Difficulté : ⭐⭐⭐⭐ (Très avancé)
 
-## Utilisation
+3.  **Tuteur de code adaptatif**
+    *   Description : Développer un agent qui aide les étudiants à apprendre un concept de programmation en posant des questions et en expliquant les erreurs.
+    *   Technologies clés : Prompt engineering avancé (rôle, CoT), analyse de code.
+    *   Difficulté : ⭐⭐⭐ (Avancé)
 
-### Méthode 1: Utilisation directe
-```python
-from src.orchestrator import generate_document_from_text
+4.  **Agent d'Analyse d'Arguments Hybride**
+    *   Description : Un système qui analyse un débat en utilisant un LLM pour l'analyse informelle (sophismes) et une bibliothèque d'IA symbolique (TweetyProject) pour valider la structure logique.
+    *   Technologies clés : IA Hybride, TweetyProject, LangChain/Semantic Kernel.
+    *   Difficulté : ⭐⭐⭐⭐ (Très avancé)
 
-# Générer un document à partir d'un texte
-texte = "Jean Dupont, développeur Python avec 5 ans d'expérience..."
-chemin_pdf = await generate_document_from_text(texte, "output/cv_jean.pdf")
-```
+5.  **Simulateur de Scénario Ludique Multi-Agents**
+    *   Description : Concevoir une simulation textuelle (escape game, mini-jeu de rôle) où plusieurs agents IA dotés de personnalités distinctes doivent interagir pour atteindre un objectif.
+    *   Technologies clés : Semantic Kernel (AgentGroupChat), stratégies de conversation.
+    *   Difficulté : ⭐⭐⭐ (Avancé)
 
-### Méthode 2: Exécution des exemples
-```bash
-python test_examples.py
-```
+### Catégorie : Applications Métier
 
-### Méthode 3: Utilisation en ligne de commande
-```bash
-python -m src.orchestrator
-```
+6.  **Agent de Recrutement Augmenté**
+    *   Description : Développez un outil qui compare un lot de CVs à une fiche de poste et produit un classement justifié des candidats.
+    *   Technologies clés : RAG, extraction d'entités, Pandas.
+    *   Difficulté : ⭐⭐⭐ (Avancé)
 
-## Structure du projet
-```
-projet/
-├── src/
-│   ├── agents/
-│   │   ├── text_analyzer.py    # Analyse du texte avec Semantic Kernel
-│   │   ├── structure_generator.py # Génération de la structure de document
-│   │   └── pdf_generator.py    # Génération du PDF avec ReportLab
-│   ├── models.py              # Modèles de données
-│   └── orchestrator.py        # Coordination du workflow
-├── output/                    # Documents générés
-├── requirements.txt           # Dépendances
-├── .env.example               # Exemple de fichier de configuration
-└── test_examples.py           # Exemples de test
-```
+7.  **Veille Concurrentielle Automatisée**
+    *   Description : Créez un agent qui scrape les sites de concurrents et synthétise les informations clés dans un rapport de veille hebdomadaire.
+    *   Technologies clés : Scraping web, analyse et synthèse de texte.
+    *   Difficulté : ⭐⭐⭐ (Avancé)
 
-## Agents
+8.  **Assistant de Réponse à Appel d'Offres**
+    *   Description : Concevez un système qui génère une première ébauche de réponse technique à un appel d'offres en se basant sur le cahier des charges et une base de connaissances interne.
+    *   Technologies clés : RAG, génération de texte long format.
+    *   Difficulté : ⭐⭐⭐⭐ (Très avancé)
 
-### 1. Agent Analyseur de Texte
-- Utilise Semantic Kernel et OpenAI pour analyser le texte d'entrée
-- Classifie le type de document (CV, facture, rapport)
-- Extrait les données structurées du texte naturel
+### Catégorie : Génération Multimédia et Créative
 
-### 2. Agent Générateur de Structure
-- Transforme les données extraites en structure de document
-- Crée des objets CVData, FactureData ou RapportData
-- Valide et normalise les données
+9.  **Générateur d'histoires multimodales**
+    *   Description : Développer une application qui génère une histoire courte et illustre chaque paragraphe avec une image générée.
+    *   Technologies clés : API OpenAI (GPT-4o, DALL-E 3) ou modèles locaux.
+    *   Difficulté : ⭐⭐⭐ (Avancé)
 
-### 3. Agent Générateur PDF
-- Génère des documents PDF à partir des structures de données
-- Utilise ReportLab pour la mise en page
-- Supporte différents formats (CV, facture, rapport)
+10. **Compositeur de Bandes Sonores d'Ambiance**
+    *   Description : Créez une application qui génère des boucles musicales instrumentales pour des ambiances spécifiques (ex: "forêt mystérieuse", "cyberpunk sous la pluie").
+    *   Technologies clés : API de génération musicale (Suno, Udio, Stable Audio).
+    *   Difficulté : ⭐⭐⭐ (Avancé)
 
-### 4. Agent Orchestrateur
-- Coordonne le workflow complet
-- Gère la séquence: analyse → structure → PDF
-- Fournit une interface simple pour l'utilisation
+11. **Générateur de Storyboards Vidéo**
+    *   Description : Développez un outil qui prend un court scénario et le transforme en une séquence de clips vidéo courts (storyboard animé).
+    *   Technologies clés : LLM pour la scénarisation, API de génération vidéo (Luma Dream Machine).
+    *   Difficulté : ⭐⭐⭐⭐ (Très avancé)
 
-## Configuration OpenAI
-Le système utilise l'API OpenAI pour l'analyse sémantique. Assurez-vous d'avoir une clé API valide.
+12. **Créateur d'Assets 3D pour le Prototypage**
+    *   Description : Concevez une application qui génère rapidement des modèles 3D simples à partir d'images ou de textes pour une utilisation dans un moteur de jeu.
+    *   Technologies clés : Modèles Image-to-3D (TripoSR) ou Text-to-3D (Luma Genie).
+    *   Difficulté : ⭐⭐⭐ (Avancé)
 
-## Limitations
-- Nécessite une connexion Internet pour l'API OpenAI
-- Performance dépendante de la qualité du texte d'entrée
-- Formatage PDF basique (peut être amélioré)
+### Catégorie : Outils de Développement et d'Analyse
 
-## Auteurs
-Projet développé dans le cadre du cours IA Générative 2025.
+13. **Auditeur de biais dans les LLMs**
+    *   Description : Concevoir un outil qui évalue les biais d'un modèle de langage en lui soumettant des prompts standardisés et en analysant les réponses.
+    *   Technologies clés : Prompt engineering, analyse de texte, visualisation de données.
+    *   Difficulté : ⭐⭐ (Intermédiaire)
+
+14. **Générateur de Contenu Structuré (CV, Facture, Rapport)**
+    *   Description : Développez un workflow multi-agents qui prend des informations en langage naturel et génère un document structuré au format PDF.
+    *   Technologies clés : Semantic Kernel, ReportLab (pour PDF), gestion de workflow.
+    *   Difficulté : ⭐⭐⭐ (Avancé)
+
+---
+Pour toutes les autres informations (planning, critères d'évaluation détaillés), veuillez vous référer au document de modalités fourni dans le dossier du cours.
+
+Bon projet à tous !
