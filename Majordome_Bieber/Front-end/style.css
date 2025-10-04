@@ -1,0 +1,201 @@
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #fff;
+    padding: 2rem 1rem; /* moins haut que 3rem */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: center;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* espace entre logo/text et boutons */
+    gap: 2rem;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.header-img {
+    width: 80px; /* plus petite image */
+    height: 80px;
+    border-radius: 50%; /* rond si portrait */
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.header-text h1 {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800; /* plus gras */
+    margin: 0;
+    color: #111;
+    letter-spacing: 1px; /* plus esthétique */
+}
+
+.header-text p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+main {
+    padding: 3rem 1rem;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-between;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 2rem;
+    flex: 1 1 300px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: #111;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.command-section {
+    text-align: center;
+    margin-top: 4rem;
+}
+
+.command-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+#command-input {
+    width: 300px;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+}
+
+#send-command {
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    background-color: #0071e3;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#send-command:hover {
+    background-color: #005bb5;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #888;
+    margin-top: 3rem;
+}
+
+.auth-section, .contact-section {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-top: 4rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.auth-container input, .contact-section input, .contact-section textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin: 0.5rem 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.auth-container button, .contact-section button {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-top: 1rem;
+    border-radius: 10px;
+    border: none;
+    background-color: #0071e3;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.auth-container button:hover, .contact-section button:hover {
+    background-color: #005bb5;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tab-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #eee;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.tab-button.active {
+    background-color: #0071e3;
+    color: #fff;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.auth-buttons button {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: none;
+    background-color: #0071e3;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
