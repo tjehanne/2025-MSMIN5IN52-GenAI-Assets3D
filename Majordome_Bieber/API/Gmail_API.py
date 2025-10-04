@@ -101,10 +101,9 @@ def readMail(nbr_mail=10):
         messages = results.get("messages", [])
 
         if not messages:
-            print("Aucun e-mail trouvé.")
-            return
+            return []
 
-        print("Vos 10 derniers e-mails :")
+        emails_list = []
         for message in messages:
             msg = service.users().messages().get(
                 userId="me", id=message["id"]).execute()
@@ -120,9 +119,14 @@ def readMail(nbr_mail=10):
                     sender = header['value']
 
             snippet = msg.get("snippet", "")
-            print(f"- De : {sender}")
-            print(f"  Sujet : {subject}")
-            print(f"  Extrait : {snippet}\n")
+            emails_list.append({
+                "from": sender,
+                "subject": subject,
+                "snippet": snippet,
+                "id": message["id"]
+            })
+
+        return emails_list
 
     except HttpError as error:
         print(f"An error occurred: {error}")
