@@ -1,0 +1,4 @@
+.env
+API/credentials.json
+.venv
+token.json
