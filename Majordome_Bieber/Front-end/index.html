@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justin Bieber | Majordome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+        }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--background);
+            color: var(--text);
+        }
+        
+        .navbar {
+            padding: 1rem 0;
+            background: var(--surface);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(37, 99, 235, 0.1);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .btn {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+        }
+        
+        .help-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            border-radius: 50px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .fs-icon {
+            font-size: 1.25rem;
+        }
+
+        .navbar-brand img {
+            transition: transform 0.2s;
+        }
+        
+        .navbar-brand:hover img {
+            transform: scale(1.05);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-response {
+            animation: slideIn 0.3s ease-out;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            padding: 1rem;
+            position: relative;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+        }
+
+        .ai-response::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right: 8px solid var(--primary);
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <div class="me-3" style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <img src="images/images.jpg" alt="Justin Bieber" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+            </div>
+            <div>
+                <h1 class="h5 mb-0 fw-bold">Justin Bieber</h1>
+                <small class="text-muted">Votre majordome numérique</small>
+            </div>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="index.html">
+                        <i class="bi bi-house-door fs-5 me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="calendar.html">
+                        <i class="bi bi-calendar3 fs-5 me-2"></i>Calendrier
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="messages.html">
+                        <i class="bi bi-envelope fs-5 me-2"></i>Messages
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="settings.html">
+                        <i class="bi bi-gear fs-5 me-2"></i>Paramètres
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Connexion
+                </button>
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#signupModal">
+                    <i class="bi bi-person-plus me-2"></i>Inscription
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main -->
+<main class="container my-5">
+    <!-- Dashboard -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-semibold mb-0">Mails</h2>
+                    <div class="icon-circle bg-primary bg-opacity-10">
+                        <i class="bi bi-envelope fs-icon text-primary"></i>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0">
+                        <h6 class="mb-1">3 nouveaux messages</h6>
+                        <small class="text-muted">Il y a 5 minutes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-semibold mb-0">Agenda</h2>
+                    <div class="icon-circle bg-success bg-opacity-10">
+                        <i class="bi bi-calendar3 fs-icon text-success"></i>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0">
+                        <h6 class="mb-1">Réunion importante</h6>
+                        <small class="text-muted">Aujourd'hui à 14h00</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-semibold mb-0">Tâches</h2>
+                    <div class="icon-circle bg-warning bg-opacity-10">
+                        <i class="bi bi-check2-all fs-icon text-warning"></i>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0">
+                        <h6 class="mb-1">5 tâches en attente</h6>
+                        <small class="text-muted">2 urgent(es)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assistant -->
+    <div class="card p-4 shadow-sm mb-5 mx-auto" style="max-width: 700px;">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="icon-circle bg-primary bg-opacity-10 p-3">
+                <i class="bi bi-robot fs-icon text-primary"></i>
+            </div>
+            <div>
+                <h2 class="h5 fw-semibold mb-1">Assistant Justin</h2>
+                <p class="text-muted mb-0">Comment puis-je vous aider aujourd'hui ?</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <input id="command-input" type="text" class="form-control" placeholder="Ex: Résume mes emails non lus...">
+            <button id="send-command" class="btn btn-primary px-4">
+                <i class="bi bi-send-fill fs-5 me-2"></i>Envoyer
+            </button>
+        </div>
+        <div id="command-output" class="mt-3 d-none">
+            <div class="mb-2 text-muted">
+                <i class="bi bi-person-circle me-2"></i>
+                <span class="user-question fw-medium"></span>
+            </div>
+            <div class="ai-response">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-robot fs-4"></i>
+                    <p class="mb-0 fw-medium"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="py-4 border-top bg-white">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h5 class="fw-semibold mb-3">À propos</h5>
+                <p class="text-muted">Justin Bieber est votre majordome numérique personnel, disponible 24/7 pour gérer vos tâches quotidiennes.</p>
+            </div>
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h5 class="fw-semibold mb-3">Contact</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="bi bi-geo-alt me-2"></i>123 Rue Exemple, 75000 Paris</li>
+                    <li class="mb-2"><i class="bi bi-envelope me-2"></i>contact@majordome.fr</li>
+                    <li><i class="bi bi-telephone me-2"></i>+33 1 23 45 67 89</li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5 class="fw-semibold mb-3">Liens rapides</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Accueil</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Services</a></li>
+                    <li><a href="#" class="text-decoration-none text-muted">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bouton Aide -->
+<button class="btn btn-primary help-btn shadow-lg" data-bs-toggle="modal" data-bs-target="#helpModal">
+    <i class="bi bi-question-circle me-2"></i>Aide
+</button>
+
+<!-- Modals -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-semibold">Connexion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">Connectez-vous pour accéder à votre espace personnel</p>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="signupModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-semibold">Créer un compte</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <p class="text-muted mb-4">Rejoignez-nous pour profiter de tous les services</p>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Nom</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Créer le compte</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-semibold">Comment pouvons-nous vous aider ?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">Envoyez-nous votre message et nous vous répondrons rapidement</p>
+                <form id="help-form">
+                    <div class="mb-3">
+                        <label class="form-label">Votre nom</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Votre email</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" name="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Envoyer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Base de données simulée
+    const database = {
+        messages: {
+            unread: 1,
+            total: 3,
+            latest: {
+                from: 'Service Marketing',
+                subject: 'Nouvelle campagne Q4 2023',
+                time: '10 minutes',
+                content: 'Nouvelle campagne à valider pour le Q4 2023'
+            },
+            all: [
+                {
+                    from: 'Service Marketing',
+                    time: '10 minutes',
+                    content: 'Nouvelle campagne à valider pour le Q4 2023',
+                    unread: true
+                },
+                {
+                    from: 'Support Technique',
+                    time: 'Hier',
+                    content: 'Mise à jour système effectuée avec succès',
+                    unread: false
+                },
+                {
+                    from: 'Resources Humaines',
+                    time: '2 jours',
+                    content: 'Rappel: Formation obligatoire le 15/12',
+                    unread: false
+                }
+            ]
+        },
+        calendar: {
+            nextEvent: {
+                title: 'Réunion importante',
+                time: '14:00',
+                location: 'Salle de conférence A'
+            },
+            todayEvents: 2,
+            weekEvents: 5
+        },
+        tasks: {
+            total: 5,
+            urgent: 2,
+            nextDeadline: 'Demain, 18:00'
+        }
+    };
+
+    // Réponses intelligentes de l'IA
+    function getAIResponse(query) {
+        query = query.toLowerCase();
+        
+        // Messages
+        if(query.includes('message') || query.includes('email') || query.includes('mail')) {
+            if(query.includes('combien') || query.includes('nombre')) {
+                return `Vous avez ${database.messages.unread} message non lu et ${database.messages.total} messages au total.`;
+            }
+            if(query.includes('dernier') || query.includes('recent')) {
+                return `Votre dernier message vient de ${database.messages.latest.from} : "${database.messages.latest.content}"`;
+            }
+            if(query.includes('non lu')) {
+                return `Vous avez ${database.messages.unread} message non lu du ${database.messages.latest.from}.`;
+            }
+            return `Dans votre boîte de réception : ${database.messages.unread} message non lu et ${database.messages.total - database.messages.unread} messages lus.`;
+        }
+        
+        // Calendrier
+        if(query.includes('agenda') || query.includes('calendrier') || query.includes('réunion')) {
+            if(query.includes('prochain')) {
+                return `Votre prochaine réunion est à ${database.calendar.nextEvent.time} dans ${database.calendar.nextEvent.location}.`;
+            }
+            if(query.includes('aujourd')) {
+                return `Vous avez ${database.calendar.todayEvents} événements aujourd'hui.`;
+            }
+            return `Prochain événement : ${database.calendar.nextEvent.title} à ${database.calendar.nextEvent.time}.`;
+        }
+        
+        // Tâches
+        if(query.includes('tâche') || query.includes('todo')) {
+            if(query.includes('urgent')) {
+                return `Vous avez ${database.tasks.urgent} tâches urgentes sur un total de ${database.tasks.total} tâches.`;
+            }
+            if(query.includes('deadline')) {
+                return `Votre prochaine deadline est pour ${database.tasks.nextDeadline}.`;
+            }
+            return `Vous avez ${database.tasks.total} tâches en cours, dont ${database.tasks.urgent} urgentes.`;
+        }
+
+        // Salutations
+        if(query.includes('bonjour') || query.includes('salut')) {
+            return 'Bonjour ! Je peux vous aider avec vos messages, votre agenda ou vos tâches. Que souhaitez-vous savoir ?';
+        }
+
+        return 'Je ne suis pas sûr de comprendre. Vous pouvez me poser des questions sur vos messages, votre agenda ou vos tâches.';
+    }
+
+    // Fonction pour traiter la commande
+    function handleCommand() {
+        const input = document.getElementById('command-input');
+        const value = input.value.trim();
+        if(!value) return;
+        
+        const outputDiv = document.getElementById('command-output');
+        outputDiv.classList.remove('d-none');
+        
+        // Afficher la question
+        outputDiv.querySelector('.user-question').textContent = value;
+        
+        // Get intelligent response based on query
+        const response = getAIResponse(value.toLowerCase());
+        outputDiv.querySelector('p').textContent = response;
+        
+        // Vider l'input et remettre le focus
+        input.value = '';
+        input.focus();
+    }
+
+    // Event listener pour le bouton
+    document.getElementById('send-command').addEventListener('click', handleCommand);
+
+    // Event listener pour la touche Enter
+    document.getElementById('command-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleCommand();
+        }
+    });
+    // Formulaire aide
+    document.getElementById('help-form').addEventListener('submit', e => {
+        e.preventDefault();
+        alert('Merci pour votre message ! Nous vous répondrons bientôt.');
+        e.target.reset();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('helpModal'));
+        modal.hide();
+    });
+</script>
+
+</body>
+</html>
