@@ -1,0 +1,30 @@
+# Requirements for generate_image_fast.py
+# Optimized for NVIDIA GPU (CUDA) - tested with RTX 3060
+# Installation: pip install -r requirements.txt
+
+# Core PyTorch with CUDA support
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
+
+# Stable Diffusion and AI models
+diffusers==0.35.2
+transformers==4.57.1
+
+# Performance optimization
+accelerate==1.11.0
+
+# Image processing
+pillow==12.0.0
+
+# Essential dependencies
+numpy==2.3.4
+
+# Additional optional packages for better performance
+# Uncomment these lines if you want extra optimizations:
+# xformers  # For faster attention (may cause compatibility issues)
+# triton    # For additional optimizations on modern GPUs
+
+# Development/debugging (optional)
+# matplotlib  # For image visualization
+# tqdm        # For progress bars (already included in dependencies)
