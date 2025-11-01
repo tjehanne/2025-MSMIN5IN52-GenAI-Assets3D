@@ -1,53 +1,200 @@
-# Projet de Fin de Cours - IA Générative 2025
+# Générateur de Modèles 3D par IA
 
-Bienvenue sur le dépôt officiel pour la soumission du projet de fin de cours sur l'IA Générative.
+Projet de génération de modèles 3D à partir de texte ou d'images, utilisant TripoSR et Stable Diffusion.
 
-## Instructions de Soumission
+## 🎯 Fonctionnalités
 
-1.  **Forkez ce dépôt :** Chaque groupe doit créer un "fork" de ce dépôt pour y travailler.
-2.  **Créez un dossier pour votre groupe :** À la racine de votre fork, créez un dossier unique pour votre groupe (ex: `groupe-alpha`, `projet-rag-chatbot`, etc.).
-3.  **Placez vos livrables :** Tous vos livrables (code, `README.md` de votre projet, slides, etc.) doivent être placés à l'intérieur de ce dossier.
-4.  **Soumettez via une Pull Request :** Une fois votre projet terminé, créez une Pull Request depuis votre fork vers le dépôt principal. La PR doit être soumise au plus tard **l'avant-veille de la présentation finale**.
+- **Génération d'images 2D** à partir de descriptions textuelles (Stable Diffusion)
+- **6 modèles Stable Diffusion** intégrés + support de modèles personnalisés
+- **Téléchargement facile** de modèles depuis Hugging Face et Civitai
+- **Conversion d'images en modèles 3D** avec TripoSR
+- **Pipeline complet** : texte → image → modèle 3D
+- **Interface web intuitive** avec Gradio
+- **Contrôle des dimensions** d'image (préréglages + personnalisé)
+- **Bouton Stop** pour annuler les générations en cours
+- **Interface en ligne de commande** interactive
+- **Préréglages de qualité** (Fast, Standard, High Quality, Maximum)
 
-## Sujets Proposés
+## 📁 Structure du Projet
 
-Voici quelques pistes de sujets. Vous êtes encouragés à proposer les vôtres.
+```
+.
+├── src/                          # Code source principal
+│   ├── __init__.py
+│   ├── generate_image.py         # Génération d'images 2D
+│   ├── generate_3d.py            # Conversion image → 3D
+│   ├── pipeline.py               # Pipeline complet texte → 3D
+│   └── interface/                # Interfaces utilisateur
+│       ├── __init__.py
+│       ├── gradio_app.py         # Interface web Gradio
+│       └── cli.py                # Interface ligne de commande
+│
+├── scripts/                      # Scripts utilitaires
+│   ├── demo_3d.py               # Démonstrations
+│   ├── test_installation.py     # Test des dépendances
+│   ├── launch_gradio.bat        # Lanceur interface web
+│   ├── download_models.py       # Téléchargeur de modèles
+│   ├── download_models_menu.bat # Menu interactif de téléchargement
+│   └── test_model.py            # Tester un modèle téléchargé
+│
+├── docs/                         # Documentation
+│   ├── GUIDE_3D.md              # Guide détaillé
+│   ├── INSTALL.md               # Instructions d'installation
+│   ├── QUICK_START_3D.md        # Démarrage rapide
+│   ├── INTERFACE_GRADIO.md      # Guide interface Gradio
+│   ├── PROMPT_EXAMPLES.md       # Exemples de prompts
+│   └── QUALITY_SETTINGS.md      # Réglages de qualité
+│
+├── models/                       # Modèles IA
+│   ├── TripoSR/                 # Modèle TripoSR
+│   └── custom-models/           # Vos modèles personnalisés
+│       ├── README.md            # Guide des modèles personnalisés
+│       └── models_config.json   # Configuration automatique
+│
+├── output/                       # Fichiers générés
+│
+├── requirements.txt              # Dépendances Python principales
+├── requirements-3d.txt           # Dépendances spécifiques 3D
+└── README.md                     # Ce fichier
+```
 
-### Catégorie : Agents et Systèmes Intelligents
+## 🚀 Installation Rapide
 
-1.  **Agent RAG pour la documentation du cours**
-    *   Description : Créer un chatbot capable de répondre aux questions des étudiants sur le contenu du cours en se basant sur les supports fournis.
-    *   Technologies clés : RAG, Base de données vectorielle, LangChain/Semantic Kernel.
-    *   Difficulté : ⭐⭐ (Intermédiaire)
+### 1. Cloner le dépôt
+```bash
+git clone https://github.com/votre-repo/2025-MSMIN5IN52-GenAI-Assets3D.git
+cd 2025-MSMIN5IN52-GenAI-Assets3D
+```
 
-2.  **Agent autonome pour la planification de voyage**
-    *   Description : Créer un agent capable de planifier un itinéraire de voyage en utilisant des outils (recherche web, API) via du "Function Calling".
-    *   Technologies clés : IA Agentique, Function Calling, API externes.
-    *   Difficulté : ⭐⭐⭐⭐ (Très avancé)
+### 2. Créer un environnement virtuel
+```bash
+python -m venv venv
+venv\Scripts\activate  # Windows
+# ou
+source venv/bin/activate  # Linux/Mac
+```
 
-3.  **Tuteur de code adaptatif**
-    *   Description : Développer un agent qui aide les étudiants à apprendre un concept de programmation en posant des questions et en expliquant les erreurs.
-    *   Technologies clés : Prompt engineering avancé (rôle, CoT), analyse de code.
-    *   Difficulté : ⭐⭐⭐ (Avancé)
+### 3. Installer les dépendances
+```bash
+pip install -r requirements.txt
+pip install -r requirements-3d.txt
+```
 
-4.  **Agent d'Analyse d'Arguments Hybride**
-    *   Description : Un système qui analyse un débat en utilisant un LLM pour l'analyse informelle (sophismes) et une bibliothèque d'IA symbolique (TweetyProject) pour valider la structure logique.
-    *   Technologies clés : IA Hybride, TweetyProject, LangChain/Semantic Kernel.
-    *   Difficulté : ⭐⭐⭐⭐ (Très avancé)
+### 4. Vérifier l'installation
+```bash
+python scripts/test_installation.py
+```
 
-5.  **Simulateur de Scénario Ludique Multi-Agents**
-    *   Description : Concevoir une simulation textuelle (escape game, mini-jeu de rôle) où plusieurs agents IA dotés de personnalités distinctes doivent interagir pour atteindre un objectif.
-    *   Technologies clés : Semantic Kernel (AgentGroupChat), stratégies de conversation.
-    *   Difficulté : ⭐⭐⭐ (Avancé)
+## 💻 Utilisation
 
-### Catégorie : Applications Métier
+### Interface Web (Recommandé)
+```bash
+# Windows
+scripts\launch_gradio.bat
 
-6.  **Agent de Recrutement Augmenté**
-    *   Description : Développez un outil qui compare un lot de CVs à une fiche de poste et produit un classement justifié des candidats.
-    *   Technologies clés : RAG, extraction d'entités, Pandas.
-    *   Difficulté : ⭐⭐⭐ (Avancé)
+# Linux/Mac
+cd scripts && ./launch_gradio.bat
+```
+Puis ouvrez http://localhost:7860 dans votre navigateur.
 
-7.  **Veille Concurrentielle Automatisée**
+**Nouveauté** : L'interface inclut maintenant :
+- 🎨 Sélecteur de modèles Stable Diffusion
+- 📐 Contrôle des dimensions d'image (préréglages + sliders)
+- 🛑 Bouton Stop pour annuler les générations
+- 🔄 Bouton pour recharger les modèles personnalisés
+
+### Télécharger des Modèles Personnalisés
+
+**Menu interactif** (Windows) :
+```bash
+scripts\download_models_menu.bat
+```
+
+**Ligne de commande** :
+```bash
+# Voir les modèles recommandés
+python scripts\download_models.py --list-recommended
+
+# Télécharger un modèle recommandé
+python scripts\download_models.py --model realistic-vision
+
+# Depuis Hugging Face
+python scripts\download_models.py --hf-id runwayml/stable-diffusion-v1-5
+
+# Convertir un fichier .safetensors
+python scripts\download_models.py --convert models\custom-models\mon-modele.safetensors
+
+# Tester un modèle téléchargé
+python scripts\test_model.py "models/custom-models/mon-modele"
+```
+
+📚 **Guide complet** : Voir [docs/GUIDE_MODELES_PERSONNALISES.md](docs/GUIDE_MODELES_PERSONNALISES.md)
+
+### Interface Ligne de Commande
+```bash
+python -m src.interface.cli
+```
+
+### Pipeline Python Direct
+```python
+from src.pipeline import text_to_3d_pipeline
+
+text_to_3d_pipeline(
+    prompt="a futuristic robot head, metallic, detailed",
+    image_steps=25,
+    model_3d_resolution=320
+)
+```
+
+## 📖 Documentation
+
+- **[Guide Complet](docs/GUIDE_3D.md)** - Documentation détaillée
+- **[Guide Modèles Personnalisés](docs/GUIDE_MODELES_PERSONNALISES.md)** - ⭐ Télécharger et utiliser des modèles externes
+- **[Installation](docs/INSTALL.md)** - Instructions d'installation pas à pas
+- **[Démarrage Rapide](docs/QUICK_START_3D.md)** - Premiers pas
+- **[Interface Gradio](docs/INTERFACE_GRADIO.md)** - Utilisation de l'interface web
+- **[Exemples de Prompts](docs/PROMPT_EXAMPLES.md)** - Exemples de descriptions
+- **[Réglages de Qualité](docs/QUALITY_SETTINGS.md)** - Optimisation des paramètres
+- **[Modèles Personnalisés (README)](models/custom-models/README.md)** - Info sur le dossier custom-models
+
+## 🎨 Exemples de Résultats
+
+**Prompt**: "a dragon skull, fantasy art, ancient bone"
+- Temps de génération : ~25 secondes
+- Formats de sortie : OBJ, GLB, STL
+- Résolution 3D : 320 (standard)
+
+## ⚙️ Configuration Requise
+
+- **Python** : 3.8+
+- **GPU** : NVIDIA avec CUDA (recommandé, 4GB+ VRAM)
+- **RAM** : 8GB minimum, 16GB recommandé
+- **Espace disque** : ~5GB pour les modèles IA
+
+## 🛠️ Technologies Utilisées
+
+- **TripoSR** : Génération de modèles 3D
+- **Stable Diffusion** : Génération d'images 2D
+- **PyTorch** : Framework de deep learning
+- **Gradio** : Interface web interactive
+- **Transformers** : Modèles de langage
+- **Rembg** : Suppression d'arrière-plan
+
+## 📝 License
+
+Ce projet utilise plusieurs bibliothèques open-source. Consultez les fichiers LICENSE respectifs.
+
+## 👥 Auteurs
+
+Projet développé dans le cadre du cours d'IA Générative - EPF 2025
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request.
+
+---
+
+Pour plus d'informations, consultez la [documentation complète](docs/GUIDE_3D.md).
     *   Description : Créez un agent qui scrape les sites de concurrents et synthétise les informations clés dans un rapport de veille hebdomadaire.
     *   Technologies clés : Scraping web, analyse et synthèse de texte.
     *   Difficulté : ⭐⭐⭐ (Avancé)

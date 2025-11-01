@@ -1,0 +1,27 @@
+# Requirements pour la génération de modèles 3D
+# Installation: pip install -r requirements-3d.txt
+
+# Base requirements (déjà installés)
+torch==2.5.1
+torchvision==0.20.1
+numpy==2.3.4
+pillow==12.0.0
+
+# 3D Generation avec TripoSR
+rembg  # Pour supprimer l'arrière-plan des images
+trimesh  # Pour manipuler les maillages 3D
+xatlas  # Pour le UV mapping
+PyMCubes  # Alternative à torchmcubes (pas de compilation CUDA)
+omegaconf  # Configuration pour TripoSR
+einops  # Operations tensorielles
+imageio[ffmpeg]  # Pour les vidéos de rendu
+moderngl  # Pour le rendu OpenGL
+
+# Diffusers (pour la génération d'images si nécessaire)
+transformers
+diffusers
+huggingface-hub
+
+# Utilities
+tqdm  # Progress bars
+requests  # Pour télécharger des modèles
