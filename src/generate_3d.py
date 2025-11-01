@@ -296,7 +296,8 @@ class TripoSR3DGenerator:
         # Extraire le mesh
         print("  🔨 Extracting 3D mesh...")
         mesh_start = time.time()
-        meshes = self.model.extract_mesh(scene_codes, has_vertex_color=True, resolution=self.mc_resolution)
+        # Utiliser has_vertex_color seulement si on va appliquer une texture
+        meshes = self.model.extract_mesh(scene_codes, has_vertex_color=apply_texture, resolution=self.mc_resolution)
         mesh_time = time.time() - mesh_start
         print(f"  ⏱️  Mesh extraction: {mesh_time:.2f}s")
         
