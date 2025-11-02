@@ -215,8 +215,7 @@ def generate_3d_from_image(
             remove_bg=True,
             foreground_ratio=0.85,
             save_format=save_format,
-            render_video=render_video,
-            apply_texture=False
+            render_video=render_video
         )
         
         total_time = time.time() - start_time

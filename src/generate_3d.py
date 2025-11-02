@@ -113,143 +113,9 @@ class TripoSR3DGenerator:
         
         return image
     
-    def apply_texture_to_mesh(self, mesh, texture_image_path, output_path, uv_config="default"):
-        """
-        Applique une texture à un mesh 3D en utilisant un mapping UV simple
-        
-        Args:
-            mesh: Mesh trimesh
-            texture_image_path (str): Chemin vers l'image de texture
-            output_path (str): Chemin de sortie pour le mesh texturé
-            uv_config (str): Configuration UV à utiliser (ex: "default", "flip_u", "flip_v", etc.)
-        
-        Returns:
-            str: Chemin vers le mesh texturé
-        """
-        print(f"  🎨 Applying texture with config: {uv_config}...")
-        
-        # Le modèle est déjà dans la bonne orientation (rotation appliquée lors de l'extraction)
-        # On applique directement la texture
-        
-        # Charger l'image de texture
-        texture_image = Image.open(texture_image_path)
-        
-        # Sauvegarder la texture au format compatible
-        base_name = os.path.splitext(output_path)[0]
-        texture_filename = f"{base_name}_texture.png"
-        texture_image.save(texture_filename)
-        
-        # Créer un mapping UV aligné avec la vue frontale de l'image
-        vertices = mesh.vertices
-        
-        # Normaliser les vertices
-        center = vertices.mean(axis=0)
-        vertices_centered = vertices - center
-        
-        # Calculer les coordonnées UV selon la configuration
-        r = np.sqrt(np.sum(vertices_centered**2, axis=1))
-        
-        # =====================================================================
-        # PROJECTION UV OPTIMALE : proj2_flip_v
-        # =====================================================================
-        # Configuration identifiée : Projection XZ avec miroir vertical
-        # - Projection 2 : theta = arctan2(X, Z), phi = arccos(Y/r)
-        # - Transformation : flip_v (miroir vertical, v = 1.0 - v)
-        #
-        # Pour tester d'autres configurations, modifiez uv_config="proj2_flip_v"
-        # lors de l'appel à apply_texture_to_mesh()
-        # =====================================================================
-        
-        if "proj1" in uv_config:
-            # Projection 1 : X, Y standard
-            theta = np.arctan2(vertices_centered[:, 1], vertices_centered[:, 0])
-            phi = np.arccos(np.clip(vertices_centered[:, 2] / (r + 1e-8), -1, 1))
-        elif "proj2" in uv_config or uv_config == "default":
-            # Projection 2 : X, Z (CONFIGURATION OPTIMALE)
-            theta = np.arctan2(vertices_centered[:, 0], vertices_centered[:, 2])
-            phi = np.arccos(np.clip(vertices_centered[:, 1] / (r + 1e-8), -1, 1))
-        elif "proj3" in uv_config:
-            # Projection 3 : Y, Z
-            theta = np.arctan2(vertices_centered[:, 1], vertices_centered[:, 2])
-            phi = np.arccos(np.clip(vertices_centered[:, 0] / (r + 1e-8), -1, 1))
-        elif "proj4" in uv_config:
-            # Projection 4 : X, -Y (compensé pour rotation Z)
-            theta = np.arctan2(vertices_centered[:, 0], -vertices_centered[:, 1])
-            phi = np.arccos(np.clip(vertices_centered[:, 2] / (r + 1e-8), -1, 1))
-        elif "proj5" in uv_config:
-            # Projection 5 : Y, -X
-            theta = np.arctan2(vertices_centered[:, 1], -vertices_centered[:, 0])
-            phi = np.arccos(np.clip(vertices_centered[:, 2] / (r + 1e-8), -1, 1))
-        elif "proj6" in uv_config:
-            # Projection 6 : -X, Y
-            theta = np.arctan2(-vertices_centered[:, 0], vertices_centered[:, 1])
-            phi = np.arccos(np.clip(vertices_centered[:, 2] / (r + 1e-8), -1, 1))
-        else:
-            # Par défaut : utiliser proj2 (optimale)
-            theta = np.arctan2(vertices_centered[:, 0], vertices_centered[:, 2])
-            phi = np.arccos(np.clip(vertices_centered[:, 1] / (r + 1e-8), -1, 1))
-        
-        # Convertir en coordonnées UV [0, 1]
-        u = (theta + np.pi) / (2 * np.pi)
-        v = phi / np.pi
-        
-        # Appliquer les transformations UV selon la configuration
-        # Par défaut (ou "default"), appliquer flip_v (configuration optimale)
-        if uv_config == "default" or "flip_v" in uv_config:
-            v = 1.0 - v  # Miroir vertical (TRANSFORMATION OPTIMALE)
-        
-        if "flip_u" in uv_config and uv_config != "default":
-            u = 1.0 - u
-        
-        if uv_config == "flip_both":
-            u = 1.0 - u
-            v = 1.0 - v
-        elif uv_config == "rotate_90":
-            u, v = v, 1.0 - u
-        elif uv_config == "rotate_180":
-            u = 1.0 - u
-            v = 1.0 - v
-        elif uv_config == "rotate_270":
-            u, v = 1.0 - v, u
-        elif uv_config == "swap_uv":
-            u, v = v, u
-        elif uv_config == "swap_flip_u":
-            u, v = v, u
-            u = 1.0 - u
-        elif uv_config == "swap_flip_v":
-            u, v = v, u
-            v = 1.0 - v
-        # "default" : pas de modification
-        
-        # Créer les coordonnées UV
-        uv_coords = np.stack([u, v], axis=1)
-        
-        # Créer le matériau avec texture
-        material = trimesh.visual.material.SimpleMaterial(
-            image=texture_image,
-            ambient=[0.8, 0.8, 0.8, 1.0],
-            diffuse=[1.0, 1.0, 1.0, 1.0]
-        )
-        
-        # Appliquer les UV au mesh
-        mesh.visual = trimesh.visual.TextureVisuals(
-            uv=uv_coords,
-            image=texture_image,
-            material=material
-        )
-        
-        # Exporter le mesh avec texture
-        mesh.export(output_path)
-        
-        print(f"  ✅ Textured mesh saved: {output_path}")
-        print(f"  🖼️  Texture file: {texture_filename}")
-        
-        return output_path
-    
     def generate_3d_model(self, image_path, output_dir="output", 
                          remove_bg=True, foreground_ratio=0.85,
-                         save_format="obj", render_video=False,
-                         apply_texture=True):
+                         save_format="obj", render_video=False):
         """
         Génère un modèle 3D à partir d'une image
         
@@ -260,7 +126,6 @@ class TripoSR3DGenerator:
             foreground_ratio (float): Ratio du premier plan
             save_format (str): Format de sauvegarde ('obj' ou 'glb')
             render_video (bool): Si True, génère une vidéo de rendu
-            apply_texture (bool): Si True, applique la texture de l'image au modèle 3D
         
         Returns:
             str: Chemin vers le modèle 3D généré
@@ -296,8 +161,7 @@ class TripoSR3DGenerator:
         # Extraire le mesh
         print("  🔨 Extracting 3D mesh...")
         mesh_start = time.time()
-        # Utiliser has_vertex_color seulement si on va appliquer une texture
-        meshes = self.model.extract_mesh(scene_codes, has_vertex_color=apply_texture, resolution=self.mc_resolution)
+        meshes = self.model.extract_mesh(scene_codes, has_vertex_color=False, resolution=self.mc_resolution)
         mesh_time = time.time() - mesh_start
         print(f"  ⏱️  Mesh extraction: {mesh_time:.2f}s")
         
@@ -335,107 +199,6 @@ class TripoSR3DGenerator:
         mesh.export(mesh_path)
         export_time = time.time() - export_start
         print(f"  ⏱️  Mesh export: {export_time:.2f}s")
-        
-        # Appliquer la texture si demandé
-        if apply_texture:
-            try:
-                # =====================================================================
-                # CONFIGURATION OPTIMALE IDENTIFIÉE : proj2_flip_v
-                # =====================================================================
-                # Après tests exhaustifs :
-                # - Projection : proj2 (arctan2(X, Z) - vue de côté XZ)
-                # - Transformation : flip_v (miroir vertical, v = 1.0 - v)
-                #
-                # Cette configuration aligne parfaitement la texture avec le modèle 3D
-                # qui a été préalablement tourné de 90° autour de l'axe Z.
-                #
-                # Pour tester d'autres configurations, décommentez la section
-                # "TEST MULTIPLE VARIANTS" ci-dessous.
-                # =====================================================================
-                
-                print(f"\n  🎨 Applying optimized texture (proj2_flip_v)...")
-                
-                # Charger le mesh avec trimesh
-                mesh_trimesh = trimesh.load(mesh_path)
-                
-                # Créer le nom de fichier pour le modèle texturé
-                textured_mesh_filename = f"model_textured.{save_format}"
-                textured_mesh_path = os.path.join(output_dir, textured_mesh_filename)
-                
-                # Appliquer la texture avec la configuration optimale
-                self.apply_texture_to_mesh(mesh_trimesh, image_path, textured_mesh_path, uv_config="proj2_flip_v")
-                
-                print(f"  ✅ Texture applied successfully")
-                print(f"  📦 Textured model: {textured_mesh_path}")
-                
-                # Mettre à jour le chemin du mesh pour le retour
-                mesh_path = textured_mesh_path
-                
-                # =====================================================================
-                # TEST MULTIPLE VARIANTS (Décommenter pour debug/test)
-                # =====================================================================
-                # Pour générer toutes les variantes (24 configurations) comme avant,
-                # décommentez le code ci-dessous. Cela peut être utile pour :
-                # - Tester de nouvelles images
-                # - Déboguer des problèmes d'orientation
-                # - Comparer différentes configurations
-                # =====================================================================
-                """
-                uv_configs = {
-                    "proj1_default": "Projection XY, Z vertical",
-                    "proj1_flip_u": "Projection XY, miroir horizontal",
-                    "proj1_flip_v": "Projection XY, miroir vertical",
-                    "proj2_default": "Projection XZ, Y vertical",
-                    "proj2_flip_u": "Projection XZ, miroir horizontal",
-                    "proj2_flip_v": "Projection XZ, miroir vertical ✅ OPTIMAL",
-                    "proj3_default": "Projection YZ, X vertical",
-                    "proj3_flip_u": "Projection YZ, miroir horizontal",
-                    "proj3_flip_v": "Projection YZ, miroir vertical",
-                    "proj4_default": "Projection X,-Y (compensation rotation)",
-                    "proj4_flip_u": "Projection X,-Y, miroir horizontal",
-                    "proj4_flip_v": "Projection X,-Y, miroir vertical",
-                    "proj5_default": "Projection Y,-X",
-                    "proj5_flip_u": "Projection Y,-X, miroir horizontal",
-                    "proj5_flip_v": "Projection Y,-X, miroir vertical",
-                    "proj6_default": "Projection -X,Y",
-                    "proj6_flip_u": "Projection -X,Y, miroir horizontal",
-                    "proj6_flip_v": "Projection -X,Y, miroir vertical",
-                    "default": "Config actuelle (aucune transformation)",
-                    "flip_u": "Config actuelle, miroir horizontal",
-                    "flip_v": "Config actuelle, miroir vertical",
-                    "flip_both": "Config actuelle, miroir H+V",
-                }
-                
-                print(f"\n  🎨 Generating {len(uv_configs)} texture projection variants...")
-                textured_paths = []
-                
-                for config_name, config_desc in uv_configs.items():
-                    mesh_copy = mesh_trimesh.copy()
-                    variant_filename = f"model_tex_{config_name}.{save_format}"
-                    variant_path = os.path.join(output_dir, variant_filename)
-                    self.apply_texture_to_mesh(mesh_copy, image_path, variant_path, uv_config=config_name)
-                    textured_paths.append((config_name, config_desc, variant_path))
-                    print(f"    ✅ {config_name}")
-                
-                # Créer un guide pour les variantes
-                uv_guide_path = os.path.join(output_dir, "UV_PROJECTIONS_GUIDE.txt")
-                with open(uv_guide_path, 'w', encoding='utf-8') as f:
-                    f.write("=" * 80 + "\n")
-                    f.write("🎨 GUIDE DES PROJECTIONS UV - VARIANTES DE TEST\n")
-                    f.write("=" * 80 + "\n\n")
-                    f.write(f"Configurations générées : {len(uv_configs)}\n")
-                    f.write("✅ Configuration optimale identifiée : proj2_flip_v\n\n")
-                    f.write("-" * 80 + "\n\n")
-                    for config_name, config_desc, config_path in textured_paths:
-                        f.write(f"  • {os.path.basename(config_path)}\n")
-                        f.write(f"    → {config_desc}\n\n")
-                    f.write("=" * 80 + "\n")
-                print(f"  📋 Variants guide: {uv_guide_path}")
-                """
-                
-            except Exception as e:
-                print(f"  ⚠️  Could not apply texture: {e}")
-                print(f"  💡 Using mesh without texture")
         
         # Générer une vidéo de rendu si demandé
         if render_video:

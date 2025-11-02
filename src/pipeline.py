@@ -26,8 +26,7 @@ def text_to_3d_pipeline(
     save_format="obj",
     render_video=False,
     keep_intermediate=True,
-    sd_model=None,
-    apply_texture=True
+    sd_model=None
 ):
     """
     Pipeline complet : Texte -> Image 2D -> Modèle 3D
@@ -44,7 +43,6 @@ def text_to_3d_pipeline(
         render_video (bool): Si True, génère une vidéo de rendu
         keep_intermediate (bool): Si True, garde les fichiers intermédiaires
         sd_model (str): Nom ou chemin du modèle Stable Diffusion (None = modèle par défaut)
-        apply_texture (bool): Si True, applique la texture de l'image au modèle 3D
     
     Returns:
         dict: Chemins vers les fichiers générés
@@ -102,8 +100,7 @@ def text_to_3d_pipeline(
         remove_bg=True,
         foreground_ratio=0.85,
         save_format=save_format,
-        render_video=render_video,
-        apply_texture=apply_texture
+        render_video=render_video
     )
     
     model_3d_time = time.time() - model_3d_start
