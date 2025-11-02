@@ -26,7 +26,8 @@ def text_to_3d_pipeline(
     save_format="obj",
     render_video=False,
     keep_intermediate=True,
-    sd_model=None
+    sd_model=None,
+    seed=None
 ):
     """
     Pipeline complet : Texte -> Image 2D -> Modèle 3D
@@ -43,6 +44,7 @@ def text_to_3d_pipeline(
         render_video (bool): Si True, génère une vidéo de rendu
         keep_intermediate (bool): Si True, garde les fichiers intermédiaires
         sd_model (str): Nom ou chemin du modèle Stable Diffusion (None = modèle par défaut)
+        seed (int): Seed pour la génération aléatoire (None ou -1 = seed aléatoire)
     
     Returns:
         dict: Chemins vers les fichiers générés
@@ -52,6 +54,10 @@ def text_to_3d_pipeline(
     print("="*70)
     print(f"📝 Prompt: '{prompt}'")
     print(f"💾 Output: {output_dir}")
+    if seed is not None and seed != -1:
+        print(f"🔢 Seed: {seed}")
+    else:
+        print(f"🎲 Seed: Random")
     print("="*70 + "\n")
     
     total_start = time.time()
@@ -64,13 +70,15 @@ def text_to_3d_pipeline(
     print("-" * 70)
     
     image_start = time.time()
-    generated_image = generate_image_from_prompt(
+    generated_image, used_seed = generate_image_from_prompt(
         prompt, 
         num_inference_steps=image_steps,
         guidance_scale=image_guidance,
         width=image_width,
         height=image_height,
-        model_name=sd_model
+        model_name=sd_model,
+        seed=seed,
+        return_seed=True
     )
     image_time = time.time() - image_start
     
@@ -114,6 +122,7 @@ def text_to_3d_pipeline(
     print(f"⏱️  Image generation: {image_time:.2f}s")
     print(f"⏱️  3D model generation: {model_3d_time:.2f}s")
     print(f"⏱️  Total time: {total_time:.2f}s")
+    print(f"🎲 Seed used: {used_seed}")
     print("-" * 70)
     print(f"📸 2D Image: {image_path}")
     print(f"🎲 3D Model: {mesh_path}")
@@ -131,7 +140,8 @@ def text_to_3d_pipeline(
         "mesh_path": mesh_path,
         "output_dir": output_dir,
         "prompt": prompt,
-        "total_time": total_time
+        "total_time": total_time,
+        "seed": used_seed
     }
     
     if render_video and os.path.exists(os.path.join(output_dir, "render.mp4")):

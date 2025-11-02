@@ -40,6 +40,7 @@ def generate_3d_from_text(
     resolution_3d,
     save_format,
     render_video,
+    seed,
     progress=gr.Progress()
 ):
     """
@@ -72,6 +73,9 @@ def generate_3d_from_text(
         # Convertir le nom du modèle en chemin
         model_path = STABLE_DIFFUSION_MODELS.get(sd_model, sd_model) if sd_model else None
         
+        # Convertir le seed
+        seed_value = None if seed == -1 else seed
+        
         # Vérifier l'annulation avant la génération
         with generation_lock:
             if generation_cancelled:
@@ -97,7 +101,8 @@ def generate_3d_from_text(
             model_3d_resolution=int(resolution_3d),
             save_format=save_format,
             render_video=render_video,
-            sd_model=model_path
+            sd_model=model_path,
+            seed=seed_value
         )
         
         # Vérifier l'annulation après la génération
@@ -112,12 +117,14 @@ def generate_3d_from_text(
         mesh_path = result['mesh_path'] if os.path.exists(result['mesh_path']) else None
         video_path = result.get('video_path') if render_video and 'video_path' in result else None
         
-        # Message de succès
+        # Message de succès avec le seed utilisé
+        seed_info = f"\n🎲 Seed utilisé : {result.get('seed', 'N/A')}" if 'seed' in result else ""
+        
         message = f"""
 ✅ **Génération réussie !**
 
 📝 Prompt : {result['prompt']}
-⏱️ Temps total : {result['total_time']:.1f}s
+⏱️ Temps total : {result['total_time']:.1f}s{seed_info}
 
 📂 Fichiers générés :
 - 📸 Image 2D : {os.path.basename(image_path)}
@@ -261,11 +268,11 @@ def cancel_generation():
 
 # Exemples de prompts
 example_prompts = [
-    ["a futuristic robot head, metallic chrome, detailed", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False],
-    ["a dragon skull, ancient bone, fantasy art, detailed teeth", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False],
-    ["a magical crystal ball on brass stand, glowing blue", "DreamShaper", 25, 7.5, 512, 512, 320, "obj", False],
-    ["a medieval sword with runes, steel blade, ornate handle", "SD 1.5", 25, 7.5, 512, 768, 320, "obj", False],
-    ["a steampunk clockwork mechanism, brass gears, intricate", "Realistic Vision", 30, 7.5, 512, 512, 384, "obj", False],
+    ["a futuristic robot head, metallic chrome, detailed", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False, -1],
+    ["a dragon skull, ancient bone, fantasy art, detailed teeth", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False, 42],
+    ["a magical crystal ball on brass stand, glowing blue", "DreamShaper", 25, 7.5, 512, 512, 320, "obj", False, -1],
+    ["a medieval sword with runes, steel blade, ornate handle", "SD 1.5", 25, 7.5, 512, 768, 320, "obj", False, 1337],
+    ["a steampunk clockwork mechanism, brass gears, intricate", "Realistic Vision", 30, 7.5, 512, 512, 384, "obj", False, -1],
 ]
 
 # Créer l'interface Gradio
@@ -361,6 +368,18 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
                             step=0.5,
                             label="🎯 Guidance (fidélité au prompt)"
                         )
+                        
+                        gr.Markdown("#### 🎲 Seed (Aléatoire)")
+                        
+                        seed_input = gr.Number(
+                            label="Seed (-1 pour aléatoire)",
+                            value=-1,
+                            precision=0,
+                            info="Utilisez le même seed pour reproduire une image identique"
+                        )
+                        
+                        with gr.Row():
+                            random_seed_btn = gr.Button("🎲 Seed aléatoire", size="sm")
                     
                     with gr.Accordion("🎲 Paramètres de modèle 3D", open=False):
                         resolution_3d = gr.Slider(
@@ -412,7 +431,7 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
             # Exemples
             gr.Examples(
                 examples=example_prompts,
-                inputs=[prompt_input, sd_model_selector, image_steps, image_guidance, image_width, image_height, resolution_3d, save_format, render_video]
+                inputs=[prompt_input, sd_model_selector, image_steps, image_guidance, image_width, image_height, resolution_3d, save_format, render_video, seed_input]
             )
         
         # Onglet 2: Génération à partir d'une image
@@ -502,6 +521,17 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
         outputs=[image_steps, image_guidance, image_width, image_height, resolution_3d]
     )
     
+    # Événement pour générer un seed aléatoire
+    def generate_random_seed():
+        """Génère un seed aléatoire entre 0 et 2^32-1"""
+        import random
+        return random.randint(0, 2**32 - 1)
+    
+    random_seed_btn.click(
+        fn=generate_random_seed,
+        outputs=[seed_input]
+    )
+    
     # Événements des boutons de dimensions
     square_btn.click(
         lambda: [512, 512],
@@ -535,7 +565,8 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
             image_height,
             resolution_3d,
             save_format,
-            render_video
+            render_video,
+            seed_input
         ],
         outputs=[image_output, mesh_output, model_viewer, video_output, status_output]
     )

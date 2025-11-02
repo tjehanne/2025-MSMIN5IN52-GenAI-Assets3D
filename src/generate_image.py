@@ -166,7 +166,7 @@ if hasattr(pipe, "enable_model_cpu_offload"):
 print("✅ Pipeline loaded with GPU optimizations!")
 
 # Function to generate an image from a text prompt
-def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.5, width=512, height=512, model_name=None):
+def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.5, width=512, height=512, model_name=None, seed=None, return_seed=False):
     """
     This function takes a text prompt as input and generates an image using the Stable Diffusion model.
     
@@ -177,15 +177,25 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
     - width (int): Width of the generated image in pixels (default: 512, must be multiple of 8)
     - height (int): Height of the generated image in pixels (default: 512, must be multiple of 8)
     - model_name (str): Nom du modèle à utiliser (None = utiliser le modèle actuellement chargé)
+    - seed (int): Seed pour la génération aléatoire (None = seed aléatoire, -1 = seed aléatoire)
+    - return_seed (bool): Si True, retourne un tuple (image, seed)
 
     Returns:
-    - PIL.Image: The generated image.
+    - PIL.Image: The generated image (ou tuple (image, seed) si return_seed=True).
     """
     global pipe
     
     # Charger le modèle si spécifié
     if model_name and model_name != current_model:
         pipe = load_model(model_name)
+    
+    # Gérer le seed
+    if seed is None or seed == -1:
+        # Seed aléatoire
+        seed = torch.randint(0, 2**32 - 1, (1,)).item()
+        print(f"🎲 Using random seed: {seed}")
+    else:
+        print(f"🔢 Using seed: {seed}")
     
     print(f"Generating image for: '{prompt}'")
     print(f"Model: {current_model}")
@@ -195,6 +205,9 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
     width = (width // 8) * 8
     height = (height // 8) * 8
     
+    # Créer le générateur avec le seed
+    generator = torch.Generator(device=device).manual_seed(seed)
+    
     # Generate the image from the prompt without computing gradients (saves memory and computation)
     with torch.no_grad():
         image = pipe(
@@ -203,8 +216,11 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
             guidance_scale=guidance_scale,
             width=width,
             height=height,
-            generator=torch.manual_seed(42)  # For reproducible results
+            generator=generator  # Use seed for controllable randomness
         ).images[0]
+    
+    if return_seed:
+        return image, seed
     return image
 
 # Example usage
