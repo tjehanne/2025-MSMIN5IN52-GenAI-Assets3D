@@ -56,6 +56,12 @@ def generate_3d_from_text(
     if not prompt or prompt.strip() == "":
         return None, None, None, None, "❌ Veuillez entrer une description !"
     
+    # Vérifier si c'est un modèle SDXL et ajuster/avertir
+    is_sdxl = "xl" in sd_model.lower() or "sdxl" in sd_model.lower()
+    warning_msg = ""
+    if is_sdxl and (image_width < 1024 or image_height < 1024):
+        warning_msg = f"\n⚠️ **Modèle SDXL détecté** : Résolution automatiquement ajustée de {image_width}x{image_height} à 1024x1024 pour de meilleurs résultats.\n"
+    
     try:
         # Vérifier l'annulation avant de commencer
         with generation_lock:
@@ -125,7 +131,7 @@ def generate_3d_from_text(
         # Message de succès avec le seed utilisé
         seed_info = f"\n🎲 Seed utilisé : {result.get('seed', 'N/A')}" if 'seed' in result else ""
         
-        message = f"""
+        message = f"""{warning_msg}
 ✅ **Génération réussie !**
 
 📝 Prompt : {result['prompt']}

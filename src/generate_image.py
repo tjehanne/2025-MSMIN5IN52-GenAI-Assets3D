@@ -25,6 +25,7 @@ MODELS_CONFIG_FILE = CUSTOM_MODELS_DIR / "models_config.json"
 def load_custom_models():
     """Charge les modèles personnalisés depuis models/custom-models/"""
     custom_models = {}
+    configured_paths = set()  # Pour éviter les doublons
     
     # Charger depuis le fichier de configuration s'il existe
     if MODELS_CONFIG_FILE.exists():
@@ -34,18 +35,42 @@ def load_custom_models():
                 for key, info in config.items():
                     model_name = info.get('name', key)
                     model_path = info.get('path', '')
+                    # Convertir en chemin absolu si c'est un chemin relatif
+                    if not os.path.isabs(model_path):
+                        model_path = str(CUSTOM_MODELS_DIR / model_path)
                     if os.path.exists(model_path):
                         custom_models[f"📦 {model_name}"] = model_path
+                        configured_paths.add(os.path.normpath(model_path))
+                        print(f"✅ Modèle personnalisé chargé: {model_name} -> {model_path}")
         except Exception as e:
             print(f"⚠️ Erreur lors du chargement de la config des modèles: {e}")
     
     # Scanner également le dossier pour les modèles non enregistrés
     if CUSTOM_MODELS_DIR.exists():
         for item in CUSTOM_MODELS_DIR.iterdir():
+            # Ignorer les fichiers de configuration et README
+            if item.name in ['models_config.json', 'models_config.json.example', 'README.md', 'QUICK_START.md']:
+                continue
+            
+            # Vérifier si ce fichier/dossier n'est pas déjà configuré
+            item_path = os.path.normpath(str(item))
+            if item_path in configured_paths:
+                continue
+            
+            # Dossiers avec model_index.json (modèles Diffusers complets)
             if item.is_dir() and (item / "model_index.json").exists():
                 model_name = f"📦 {item.name}"
                 if model_name not in custom_models:
                     custom_models[model_name] = str(item)
+                    print(f"✅ Modèle dossier trouvé: {item.name}")
+            
+            # Fichiers .safetensors ou .ckpt (checkpoints uniques)
+            elif item.is_file() and item.suffix in ['.safetensors', '.ckpt']:
+                # Extraire le nom sans extension
+                model_name = f"📦 {item.stem}"
+                if model_name not in custom_models:
+                    custom_models[model_name] = str(item)
+                    print(f"✅ Checkpoint trouvé: {item.name}")
     
     return custom_models
 
@@ -71,7 +96,7 @@ def load_model(model_name_or_path="CompVis/stable-diffusion-v1-4"):
     Charge un modèle Stable Diffusion
     
     Args:
-        model_name_or_path: Nom du modèle sur HuggingFace ou chemin local
+        model_name_or_path: Nom du modèle sur HuggingFace, chemin vers un dossier ou fichier .safetensors/.ckpt
     
     Returns:
         Pipeline Stable Diffusion chargé
@@ -87,15 +112,51 @@ def load_model(model_name_or_path="CompVis/stable-diffusion-v1-4"):
     
     # Vérifier si c'est un chemin local
     is_local = os.path.exists(model_name_or_path)
+    is_single_file = is_local and os.path.isfile(model_name_or_path)
+    
+    # Détecter si c'est un modèle SDXL
+    is_sdxl = "xl" in model_name_or_path.lower() or "sdxl" in model_name_or_path.lower()
     
     try:
-        pipe = StableDiffusionPipeline.from_pretrained(
-            model_name_or_path,
-            low_cpu_mem_usage=True,
-            safety_checker=None,
-            requires_safety_checker=False,
-            local_files_only=is_local  # Utiliser uniquement les fichiers locaux si c'est un chemin
-        )
+        # Charger depuis un fichier .safetensors ou .ckpt unique
+        if is_single_file and model_name_or_path.endswith(('.safetensors', '.ckpt')):
+            print(f"🔧 Chargement depuis un checkpoint unique...")
+            
+            # Utiliser le pipeline approprié selon le type de modèle
+            if is_sdxl:
+                from diffusers import StableDiffusionXLPipeline
+                print(f"⚡ Détection d'un modèle SDXL - utilisation du pipeline XL")
+                pipe = StableDiffusionXLPipeline.from_single_file(
+                    model_name_or_path,
+                    use_safetensors=True,
+                    torch_dtype=torch.float16 if device == "cuda" else torch.float32,
+                    variant="fp16" if device == "cuda" else None
+                )
+            else:
+                pipe = StableDiffusionPipeline.from_single_file(
+                    model_name_or_path,
+                    use_safetensors=True,
+                    torch_dtype=torch.float16 if device == "cuda" else torch.float32
+                )
+        # Charger depuis un dossier ou HuggingFace
+        else:
+            if is_sdxl:
+                from diffusers import StableDiffusionXLPipeline
+                print(f"⚡ Détection d'un modèle SDXL - utilisation du pipeline XL")
+                pipe = StableDiffusionXLPipeline.from_pretrained(
+                    model_name_or_path,
+                    use_safetensors=True,
+                    local_files_only=is_local,
+                    torch_dtype=torch.float16 if device == "cuda" else torch.float32,
+                    variant="fp16" if device == "cuda" else None
+                )
+            else:
+                pipe = StableDiffusionPipeline.from_pretrained(
+                    model_name_or_path,
+                    use_safetensors=True,
+                    local_files_only=is_local,
+                    torch_dtype=torch.float16 if device == "cuda" else torch.float32
+                )
         
         # Convert to half precision for GPU speed optimization
         if device == "cuda":
@@ -165,6 +226,12 @@ if hasattr(pipe, "enable_model_cpu_offload"):
 
 print("✅ Pipeline loaded with GPU optimizations!")
 
+def is_sdxl_model(model_path):
+    """Vérifie si un modèle est SDXL"""
+    if not model_path:
+        return False
+    return "xl" in model_path.lower() or "sdxl" in model_path.lower()
+
 # Function to generate an image from a text prompt
 def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.5, width=512, height=512, model_name=None, seed=None, return_seed=False, negative_prompt=None):
     """
@@ -189,6 +256,14 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
     # Charger le modèle si spécifié
     if model_name and model_name != current_model:
         pipe = load_model(model_name)
+    
+    # Ajuster les dimensions pour SDXL (minimum 1024x1024 recommandé)
+    if is_sdxl_model(current_model):
+        min_dimension = 1024
+        if width < min_dimension or height < min_dimension:
+            print(f"⚠️ SDXL détecté : ajustement automatique de la résolution de {width}x{height} vers {min_dimension}x{min_dimension}")
+            width = min_dimension
+            height = min_dimension
     
     # Gérer le seed
     if seed is None or seed == -1:

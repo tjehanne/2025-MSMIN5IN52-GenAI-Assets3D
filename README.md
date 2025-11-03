@@ -101,6 +101,39 @@ generate_3d_from_text(
 - Conversion en modèle 3D avec TripoSR
 - Formats de sortie : OBJ, GLB, STL
 
+## 📦 Modèles Personnalisés
+
+### Support des modèles Stable Diffusion
+
+Le projet supporte plusieurs types de modèles Stable Diffusion :
+
+**Modèles pré-installés :**
+- SD 1.4 (défaut) - Rapide, 512x512
+- SD 1.5 - Rapide, 512x512  
+- SD 2.1 - Amélioré, 512x768
+- Realistic Vision - Photoréaliste
+- DreamShaper - Polyvalent
+- Anything V5 - Style anime
+
+**Modèles personnalisés :**
+Placez vos modèles dans `models/custom-models/` :
+- Fichiers `.safetensors` ou `.ckpt`
+- Dossiers complets (format Diffusers)
+- Configuration via `models_config.json`
+
+**Voir** : `models/custom-models/README.md` pour le guide complet
+
+### ⚠️ Note sur les modèles SDXL
+
+Les modèles SDXL (comme Illustrious XL) offrent une meilleure qualité mais :
+- Nécessitent une résolution minimale de **1024x1024**
+- Utilisent plus de VRAM (~6GB)
+- Génération 2-3x plus lente
+
+Le système ajuste automatiquement la résolution pour SDXL.
+
+**Voir** : `models/custom-models/SDXL_INFO.md` pour plus de détails
+
 ## ⚙️ Configuration Requise
 
 - **Python** : 3.8+
