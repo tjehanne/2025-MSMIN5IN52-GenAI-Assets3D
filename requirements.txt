@@ -1,15 +1,20 @@
 # Requirements for 2D Image Generation + 3D Model Generation
 # Optimized for NVIDIA GPU (CUDA) - Tested on RTX 3060 Laptop GPU
 # 
-# INSTALLATION: pip install -r requirements.txt
-# VERIFICATION: python -c "import torch; print('CUDA:', torch.cuda.is_available())"
+# INSTALLATION INSTRUCTIONS:
+# 1. pip install -r requirements.txt
+# 2. pip install "numpy<2.0"  # Important: Downgrade NumPy for compatibility
+# 3. pip install xformers==0.0.27.post2 --index-url https://download.pytorch.org/whl/cu121
+# 
+# VERIFICATION: 
+# python -c "import torch, xformers; print('CUDA:', torch.cuda.is_available(), '| xFormers:', xformers.__version__)"
 
 # === CORE PYTORCH WITH CUDA SUPPORT ===
 # Install PyTorch with CUDA support using extra index
 --extra-index-url https://download.pytorch.org/whl/cu121
-torch==2.5.1+cu121
-torchvision==0.20.1+cu121
-torchaudio==2.5.1+cu121
+torch==2.4.0+cu121
+torchvision==0.19.0+cu121
+torchaudio==2.4.0+cu121
 
 # === AI/ML MODELS & DIFFUSION ===
 diffusers==0.35.2
@@ -17,12 +22,13 @@ transformers==4.57.1
 
 # === PERFORMANCE & OPTIMIZATION ===
 accelerate==1.11.0
+# xformers==0.0.27.post2  # Install separately after requirements (see instructions above)
 
 # === IMAGE PROCESSING ===
 pillow>=10.0.0,<12.0  # Compatible with Gradio 5.x (requires <12.0)
 
 # === ESSENTIAL DEPENDENCIES ===
-numpy>=2.3.0
+numpy<2.0  # CRITICAL: NumPy 2.x is incompatible with PyTorch 2.4.0
 
 # === WEB INTERFACE ===
 gradio>=5.0.0
@@ -53,6 +59,19 @@ moderngl  # OpenGL rendering
 # - fsspec (for file system operations)
 # - mpmath (for symbolic math)
 
-# === OPTIONAL OPTIMIZATIONS (uncomment if needed) ===
-# xformers>=0.0.20  # Faster attention (may cause issues on some systems)
-# triton>=2.0.0     # GPU kernel optimizations (NVIDIA only)
+# === PERFORMANCE NOTES ===
+# xFormers provides ~20% speedup and -15% VRAM usage
+# Install AFTER requirements.txt:
+#   pip install xformers==0.0.27.post2 --index-url https://download.pytorch.org/whl/cu121
+#
+# Triton is optional (NVIDIA only, not critical for this project)
+# triton>=2.0.0
+
+# === TESTED CONFIGURATION ===
+# ✅ PyTorch: 2.4.0+cu121
+# ✅ TorchVision: 0.19.0+cu121
+# ✅ TorchAudio: 2.4.0+cu121
+# ✅ xFormers: 0.0.27.post2
+# ✅ NumPy: 1.26.x (< 2.0)
+# ✅ CUDA: 12.1
+# ✅ Python: 3.11.x

@@ -164,13 +164,31 @@ def load_model(model_name_or_path="CompVis/stable-diffusion-v1-4"):
         else:
             pipe = pipe.to(device)
         
-        # Use DPM++ scheduler for faster generation
-        pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+        # Use DPM++ 2M Karras scheduler for faster and better generation
+        print("⚡ Configuration du scheduler DPM++ 2M Karras...")
+        pipe.scheduler = DPMSolverMultistepScheduler.from_config(
+            pipe.scheduler.config,
+            algorithm_type="dpmsolver++",
+            use_karras_sigmas=True
+        )
         
-        # Enable memory optimizations
+        # Enable memory optimizations conditionally
         if device == "cuda":
-            pipe.enable_model_cpu_offload()
-            print("✅ Model CPU offload enabled for memory efficiency")
+            total_vram_gb = torch.cuda.get_device_properties(0).total_memory / 1024**3
+            
+            # CPU offload seulement si VRAM limitée ou modèle SDXL
+            if total_vram_gb <= 6 or is_sdxl:
+                pipe.enable_model_cpu_offload()
+                print("✅ Model CPU offload enabled (GPU 6GB ou SDXL)")
+            else:
+                # Garder le modèle entièrement sur GPU pour plus de vitesse
+                print("✅ Modèle gardé sur GPU (VRAM suffisante)")
+            
+            # Optimisations mémoire supplémentaires
+            if hasattr(pipe, "enable_attention_slicing"):
+                pipe.enable_attention_slicing(1)  # Slice size = 1 pour économiser VRAM
+            if hasattr(pipe, "enable_vae_slicing"):
+                pipe.enable_vae_slicing()
         
         current_model = model_name_or_path
         print(f"✅ Modèle chargé avec succès!")
@@ -257,13 +275,32 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
     if model_name and model_name != current_model:
         pipe = load_model(model_name)
     
-    # Ajuster les dimensions pour SDXL (minimum 1024x1024 recommandé)
+    # Ajuster les dimensions pour SDXL selon la VRAM disponible
     if is_sdxl_model(current_model):
-        min_dimension = 1024
-        if width < min_dimension or height < min_dimension:
-            print(f"⚠️ SDXL détecté : ajustement automatique de la résolution de {width}x{height} vers {min_dimension}x{min_dimension}")
-            width = min_dimension
-            height = min_dimension
+        # Vérifier la VRAM disponible
+        if torch.cuda.is_available():
+            total_vram_gb = torch.cuda.get_device_properties(0).total_memory / 1024**3
+            
+            # Ajuster la résolution selon la VRAM
+            if total_vram_gb <= 6:
+                # RTX 3060 Laptop - Réduire pour éviter OOM et accélérer
+                recommended_size = 768
+            elif total_vram_gb <= 8:
+                recommended_size = 896
+            else:
+                recommended_size = 1024
+        else:
+            recommended_size = 768
+        
+        if width < recommended_size or height < recommended_size:
+            print(f"⚡ SDXL optimisé : ajustement automatique de {width}x{height} → {recommended_size}x{recommended_size} pour GPU {total_vram_gb:.0f}GB")
+            width = recommended_size
+            height = recommended_size
+        
+        # Optimiser les steps pour SDXL sur GPU limité
+        if num_inference_steps == 20 and total_vram_gb <= 6:
+            num_inference_steps = 15
+            print(f"⚡ Steps réduits à {num_inference_steps} pour accélérer SDXL sur GPU 6GB")
     
     # Gérer le seed
     if seed is None or seed == -1:

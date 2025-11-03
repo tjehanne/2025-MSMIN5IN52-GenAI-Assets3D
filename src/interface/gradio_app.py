@@ -279,11 +279,11 @@ def cancel_generation():
 
 # Exemples de prompts
 example_prompts = [
-    ["a futuristic robot head, metallic chrome, detailed", "blurry, low quality, distorted", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False, -1],
-    ["a dragon skull, ancient bone, fantasy art, detailed teeth", "cartoon, toy, plastic", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False, 42],
-    ["a magical crystal ball on brass stand, glowing blue", "dark, broken, cracked", "DreamShaper", 25, 7.5, 512, 512, 320, "obj", False, -1],
-    ["a medieval sword with runes, steel blade, ornate handle", "rusty, damaged, bent", "SD 1.5", 25, 7.5, 512, 768, 320, "obj", False, 1337],
-    ["a steampunk clockwork mechanism, brass gears, intricate", "simple, plain, smooth", "Realistic Vision", 30, 7.5, 512, 512, 384, "obj", False, -1],
+    ["a futuristic robot head, metallic chrome, detailed", "blurry, low quality, distorted", "SD 1.4 (Défaut)", 15, 7.5, 512, 512, 320, "obj", False, -1],
+    ["a dragon skull, ancient bone, fantasy art, detailed teeth", "cartoon, toy, plastic", "SD 1.4 (Défaut)", 15, 7.5, 512, 512, 320, "obj", False, 42],
+    ["a magical crystal ball on brass stand, glowing blue", "dark, broken, cracked", "DreamShaper", 15, 7.5, 512, 512, 320, "obj", False, -1],
+    ["a medieval sword with runes, steel blade, ornate handle", "rusty, damaged, bent", "SD 1.5", 15, 7.5, 512, 768, 320, "obj", False, 1337],
+    ["a steampunk clockwork mechanism, brass gears, intricate", "simple, plain, smooth", "Realistic Vision", 20, 7.5, 512, 512, 384, "obj", False, -1],
 ]
 
 # Créer l'interface Gradio
@@ -374,9 +374,10 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
                         image_steps = gr.Slider(
                             minimum=10,
                             maximum=50,
-                            value=25,
+                            value=15,
                             step=5,
-                            label="Steps (qualité de l'image)"
+                            label="Steps (qualité de l'image)",
+                            info="⚡ 15 steps = rapide, 25 = qualité, 35+ = haute qualité"
                         )
                         
                         image_guidance = gr.Slider(
