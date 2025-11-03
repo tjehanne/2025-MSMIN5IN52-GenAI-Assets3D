@@ -166,7 +166,7 @@ if hasattr(pipe, "enable_model_cpu_offload"):
 print("✅ Pipeline loaded with GPU optimizations!")
 
 # Function to generate an image from a text prompt
-def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.5, width=512, height=512, model_name=None, seed=None, return_seed=False):
+def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.5, width=512, height=512, model_name=None, seed=None, return_seed=False, negative_prompt=None):
     """
     This function takes a text prompt as input and generates an image using the Stable Diffusion model.
     
@@ -179,6 +179,7 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
     - model_name (str): Nom du modèle à utiliser (None = utiliser le modèle actuellement chargé)
     - seed (int): Seed pour la génération aléatoire (None = seed aléatoire, -1 = seed aléatoire)
     - return_seed (bool): Si True, retourne un tuple (image, seed)
+    - negative_prompt (str): Ce que vous ne voulez PAS voir dans l'image (défauts à éviter)
 
     Returns:
     - PIL.Image: The generated image (ou tuple (image, seed) si return_seed=True).
@@ -198,6 +199,8 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
         print(f"🔢 Using seed: {seed}")
     
     print(f"Generating image for: '{prompt}'")
+    if negative_prompt:
+        print(f"🚫 Negative prompt: '{negative_prompt}'")
     print(f"Model: {current_model}")
     print(f"Steps: {num_inference_steps}, Guidance: {guidance_scale}, Size: {width}x{height}")
     
@@ -212,6 +215,7 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
     with torch.no_grad():
         image = pipe(
             prompt,
+            negative_prompt=negative_prompt,  # Specify what to avoid in the image
             num_inference_steps=num_inference_steps,  # Reduced from 50 to 20 for speed
             guidance_scale=guidance_scale,
             width=width,

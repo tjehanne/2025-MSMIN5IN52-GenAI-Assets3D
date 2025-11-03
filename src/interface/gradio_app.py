@@ -32,6 +32,7 @@ generation_lock = threading.Lock()
 
 def generate_3d_from_text(
     prompt,
+    negative_prompt,
     sd_model,
     image_steps,
     image_guidance,
@@ -90,9 +91,13 @@ def generate_3d_from_text(
         
         progress(0.3, desc="🖼️ Création de l'image 2D...")
         
+        # Convertir le negative prompt (vide si non fourni)
+        neg_prompt = negative_prompt.strip() if negative_prompt and negative_prompt.strip() else None
+        
         # Générer le modèle 3D
         result = text_to_3d_pipeline(
             prompt=prompt.strip(),
+            negative_prompt=neg_prompt,
             output_dir="output/gradio",
             image_steps=int(image_steps),
             image_guidance=float(image_guidance),
@@ -268,11 +273,11 @@ def cancel_generation():
 
 # Exemples de prompts
 example_prompts = [
-    ["a futuristic robot head, metallic chrome, detailed", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False, -1],
-    ["a dragon skull, ancient bone, fantasy art, detailed teeth", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False, 42],
-    ["a magical crystal ball on brass stand, glowing blue", "DreamShaper", 25, 7.5, 512, 512, 320, "obj", False, -1],
-    ["a medieval sword with runes, steel blade, ornate handle", "SD 1.5", 25, 7.5, 512, 768, 320, "obj", False, 1337],
-    ["a steampunk clockwork mechanism, brass gears, intricate", "Realistic Vision", 30, 7.5, 512, 512, 384, "obj", False, -1],
+    ["a futuristic robot head, metallic chrome, detailed", "blurry, low quality, distorted", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False, -1],
+    ["a dragon skull, ancient bone, fantasy art, detailed teeth", "cartoon, toy, plastic", "SD 1.4 (Défaut)", 25, 7.5, 512, 512, 320, "obj", False, 42],
+    ["a magical crystal ball on brass stand, glowing blue", "dark, broken, cracked", "DreamShaper", 25, 7.5, 512, 512, 320, "obj", False, -1],
+    ["a medieval sword with runes, steel blade, ornate handle", "rusty, damaged, bent", "SD 1.5", 25, 7.5, 512, 768, 320, "obj", False, 1337],
+    ["a steampunk clockwork mechanism, brass gears, intricate", "simple, plain, smooth", "Realistic Vision", 30, 7.5, 512, 512, 384, "obj", False, -1],
 ]
 
 # Créer l'interface Gradio
@@ -290,6 +295,13 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
                         label="Décrivez votre modèle 3D",
                         placeholder="Ex: a futuristic robot head, metallic, detailed",
                         lines=3
+                    )
+                    
+                    negative_prompt_input = gr.Textbox(
+                        label="🚫 Negative Prompt (optionnel - ce que vous NE voulez PAS)",
+                        placeholder="Ex: blurry, low quality, distorted, deformed, ugly, bad anatomy",
+                        lines=2,
+                        value=""
                     )
                     
                     gr.Markdown("### 🎨 Modèle de Génération")
@@ -431,7 +443,7 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
             # Exemples
             gr.Examples(
                 examples=example_prompts,
-                inputs=[prompt_input, sd_model_selector, image_steps, image_guidance, image_width, image_height, resolution_3d, save_format, render_video, seed_input]
+                inputs=[prompt_input, negative_prompt_input, sd_model_selector, image_steps, image_guidance, image_width, image_height, resolution_3d, save_format, render_video, seed_input]
             )
         
         # Onglet 2: Génération à partir d'une image
@@ -558,6 +570,7 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
         fn=generate_3d_from_text,
         inputs=[
             prompt_input,
+            negative_prompt_input,
             sd_model_selector,
             image_steps,
             image_guidance,

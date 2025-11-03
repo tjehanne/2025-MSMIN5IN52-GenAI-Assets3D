@@ -27,7 +27,8 @@ def text_to_3d_pipeline(
     render_video=False,
     keep_intermediate=True,
     sd_model=None,
-    seed=None
+    seed=None,
+    negative_prompt=None
 ):
     """
     Pipeline complet : Texte -> Image 2D -> Modèle 3D
@@ -45,6 +46,7 @@ def text_to_3d_pipeline(
         keep_intermediate (bool): Si True, garde les fichiers intermédiaires
         sd_model (str): Nom ou chemin du modèle Stable Diffusion (None = modèle par défaut)
         seed (int): Seed pour la génération aléatoire (None ou -1 = seed aléatoire)
+        negative_prompt (str): Ce que vous ne voulez PAS voir dans l'image (défauts à éviter)
     
     Returns:
         dict: Chemins vers les fichiers générés
@@ -53,6 +55,8 @@ def text_to_3d_pipeline(
     print("🚀 TEXT-TO-3D PIPELINE")
     print("="*70)
     print(f"📝 Prompt: '{prompt}'")
+    if negative_prompt:
+        print(f"🚫 Negative Prompt: '{negative_prompt}'")
     print(f"💾 Output: {output_dir}")
     if seed is not None and seed != -1:
         print(f"🔢 Seed: {seed}")
@@ -78,7 +82,8 @@ def text_to_3d_pipeline(
         height=image_height,
         model_name=sd_model,
         seed=seed,
-        return_seed=True
+        return_seed=True,
+        negative_prompt=negative_prompt
     )
     image_time = time.time() - image_start
     
