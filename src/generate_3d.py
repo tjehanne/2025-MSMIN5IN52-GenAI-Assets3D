@@ -161,7 +161,7 @@ class TripoSR3DGenerator:
         # Extraire le mesh
         print("  🔨 Extracting 3D mesh...")
         mesh_start = time.time()
-        meshes = self.model.extract_mesh(scene_codes, has_vertex_color=False, resolution=self.mc_resolution)
+        meshes = self.model.extract_mesh(scene_codes, has_vertex_color=True, resolution=self.mc_resolution)
         mesh_time = time.time() - mesh_start
         print(f"  ⏱️  Mesh extraction: {mesh_time:.2f}s")
         
