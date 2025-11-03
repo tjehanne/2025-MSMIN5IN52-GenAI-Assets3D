@@ -1,5 +1,5 @@
-# Requirements for generate_image_fast.py
-# Optimized for NVIDIA GPU (CUDA) - RTX 3060 Laptop GPU tested
+# Requirements for 2D Image Generation + 3D Model Generation
+# Optimized for NVIDIA GPU (CUDA) - Tested on RTX 3060 Laptop GPU
 # 
 # INSTALLATION: pip install -r requirements.txt
 # VERIFICATION: python -c "import torch; print('CUDA:', torch.cuda.is_available())"
@@ -19,10 +19,23 @@ transformers==4.57.1
 accelerate==1.11.0
 
 # === IMAGE PROCESSING ===
-pillow>=12.0.0
+pillow>=10.0.0,<12.0  # Compatible with Gradio 5.x (requires <12.0)
 
 # === ESSENTIAL DEPENDENCIES ===
 numpy>=2.3.0
+
+# === WEB INTERFACE ===
+gradio>=5.0.0
+
+# === 3D GENERATION (TripoSR) ===
+rembg  # Background removal for images
+trimesh  # 3D mesh manipulation
+xatlas  # UV mapping
+PyMCubes  # Marching cubes algorithm (no CUDA compilation needed)
+omegaconf  # Configuration management for TripoSR
+einops  # Tensor operations
+imageio[ffmpeg]  # Video rendering support
+moderngl  # OpenGL rendering
 
 # === AUTOMATIC DEPENDENCIES (included automatically) ===
 # The following are installed automatically by the packages above:
