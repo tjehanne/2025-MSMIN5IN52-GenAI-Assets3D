@@ -42,6 +42,7 @@ def generate_3d_from_text(
     save_format,
     render_video,
     seed,
+    force_sdxl_settings,
     progress=gr.Progress()
 ):
     """
@@ -56,11 +57,11 @@ def generate_3d_from_text(
     if not prompt or prompt.strip() == "":
         return None, None, None, None, "❌ Veuillez entrer une description !"
     
-    # Vérifier si c'est un modèle SDXL et ajuster/avertir
+    # Vérifier si c'est un modèle SDXL et afficher un avertissement (sans imposer)
     is_sdxl = "xl" in sd_model.lower() or "sdxl" in sd_model.lower()
     warning_msg = ""
-    if is_sdxl and (image_width < 1024 or image_height < 1024):
-        warning_msg = f"\n⚠️ **Modèle SDXL détecté** : Résolution automatiquement ajustée de {image_width}x{image_height} à 1024x1024 pour de meilleurs résultats.\n"
+    if is_sdxl and (image_width < 768 or image_height < 768):
+        warning_msg = f"\nℹ️ **Modèle SDXL détecté** : Pour de meilleurs résultats, une résolution minimale de 768x768 est recommandée (actuellement {image_width}x{image_height}).\n"
     
     try:
         # Vérifier l'annulation avant de commencer
@@ -113,7 +114,8 @@ def generate_3d_from_text(
             save_format=save_format,
             render_video=render_video,
             sd_model=model_path,
-            seed=seed_value
+            seed=seed_value,
+            force_sdxl_settings=force_sdxl_settings
         )
         
         # Vérifier l'annulation après la génération
@@ -279,11 +281,11 @@ def cancel_generation():
 
 # Exemples de prompts
 example_prompts = [
-    ["a futuristic robot head, metallic chrome, detailed", "blurry, low quality, distorted", "SD 1.4 (Défaut)", 15, 7.5, 512, 512, 320, "obj", False, -1],
-    ["a dragon skull, ancient bone, fantasy art, detailed teeth", "cartoon, toy, plastic", "SD 1.4 (Défaut)", 15, 7.5, 512, 512, 320, "obj", False, 42],
-    ["a magical crystal ball on brass stand, glowing blue", "dark, broken, cracked", "DreamShaper", 15, 7.5, 512, 512, 320, "obj", False, -1],
-    ["a medieval sword with runes, steel blade, ornate handle", "rusty, damaged, bent", "SD 1.5", 15, 7.5, 512, 768, 320, "obj", False, 1337],
-    ["a steampunk clockwork mechanism, brass gears, intricate", "simple, plain, smooth", "Realistic Vision", 20, 7.5, 512, 512, 384, "obj", False, -1],
+    ["a futuristic robot head, metallic chrome, detailed", "blurry, low quality, distorted", "SD 1.4 (Défaut)", 15, 7.5, 512, 512, 320, "obj", False, -1, False],
+    ["a dragon skull, ancient bone, fantasy art, detailed teeth", "cartoon, toy, plastic", "SD 1.4 (Défaut)", 15, 7.5, 512, 512, 320, "obj", False, 42, False],
+    ["a magical crystal ball on brass stand, glowing blue", "dark, broken, cracked", "DreamShaper", 15, 7.5, 512, 512, 320, "obj", False, -1, False],
+    ["a medieval sword with runes, steel blade, ornate handle", "rusty, damaged, bent", "SD 1.5", 15, 7.5, 512, 768, 320, "obj", False, 1337, False],
+    ["a steampunk clockwork mechanism, brass gears, intricate", "simple, plain, smooth", "Realistic Vision", 20, 7.5, 512, 512, 384, "obj", False, -1, False],
 ]
 
 # Créer l'interface Gradio
@@ -397,6 +399,12 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
                             info="Utilisez le même seed pour reproduire une image identique"
                         )
                         
+                        force_sdxl_checkbox = gr.Checkbox(
+                            label="⚙️ Forcer les paramètres optimisés pour SDXL",
+                            value=False,
+                            info="Si coché, ajuste automatiquement la résolution et les steps pour les modèles SDXL. Sinon, vos paramètres sont utilisés tels quels."
+                        )
+                        
                         with gr.Row():
                             random_seed_btn = gr.Button("🎲 Seed aléatoire", size="sm")
                     
@@ -450,7 +458,7 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
             # Exemples
             gr.Examples(
                 examples=example_prompts,
-                inputs=[prompt_input, negative_prompt_input, sd_model_selector, image_steps, image_guidance, image_width, image_height, resolution_3d, save_format, render_video, seed_input]
+                inputs=[prompt_input, negative_prompt_input, sd_model_selector, image_steps, image_guidance, image_width, image_height, resolution_3d, save_format, render_video, seed_input, force_sdxl_checkbox]
             )
         
         # Onglet 2: Génération à partir d'une image
@@ -586,7 +594,8 @@ with gr.Blocks(title="Générateur de Modèles 3D", theme=gr.themes.Soft()) as d
             resolution_3d,
             save_format,
             render_video,
-            seed_input
+            seed_input,
+            force_sdxl_checkbox
         ],
         outputs=[image_output, mesh_output, model_viewer, video_output, status_output]
     )

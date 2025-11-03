@@ -251,7 +251,7 @@ def is_sdxl_model(model_path):
     return "xl" in model_path.lower() or "sdxl" in model_path.lower()
 
 # Function to generate an image from a text prompt
-def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.5, width=512, height=512, model_name=None, seed=None, return_seed=False, negative_prompt=None):
+def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.5, width=512, height=512, model_name=None, seed=None, return_seed=False, negative_prompt=None, force_sdxl_settings=False):
     """
     This function takes a text prompt as input and generates an image using the Stable Diffusion model.
     
@@ -265,6 +265,7 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
     - seed (int): Seed pour la génération aléatoire (None = seed aléatoire, -1 = seed aléatoire)
     - return_seed (bool): Si True, retourne un tuple (image, seed)
     - negative_prompt (str): Ce que vous ne voulez PAS voir dans l'image (défauts à éviter)
+    - force_sdxl_settings (bool): Si False, permet de garder les paramètres personnalisés pour SDXL (default: False)
 
     Returns:
     - PIL.Image: The generated image (ou tuple (image, seed) si return_seed=True).
@@ -275,8 +276,8 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
     if model_name and model_name != current_model:
         pipe = load_model(model_name)
     
-    # Ajuster les dimensions pour SDXL selon la VRAM disponible
-    if is_sdxl_model(current_model):
+    # Ajuster les dimensions pour SDXL UNIQUEMENT si force_sdxl_settings est True
+    if force_sdxl_settings and is_sdxl_model(current_model):
         # Vérifier la VRAM disponible
         if torch.cuda.is_available():
             total_vram_gb = torch.cuda.get_device_properties(0).total_memory / 1024**3
@@ -301,6 +302,15 @@ def generate_image_from_prompt(prompt, num_inference_steps=20, guidance_scale=7.
         if num_inference_steps == 20 and total_vram_gb <= 6:
             num_inference_steps = 15
             print(f"⚡ Steps réduits à {num_inference_steps} pour accélérer SDXL sur GPU 6GB")
+    elif is_sdxl_model(current_model):
+        # Juste afficher un avertissement si les paramètres semblent bas pour SDXL
+        if torch.cuda.is_available():
+            total_vram_gb = torch.cuda.get_device_properties(0).total_memory / 1024**3
+            if width < 768 or height < 768:
+                print(f"ℹ️ Modèle SDXL détecté avec résolution {width}x{height}. Recommandation : 768x768 minimum pour de meilleurs résultats.")
+        else:
+            if width < 768 or height < 768:
+                print(f"ℹ️ Modèle SDXL détecté avec résolution {width}x{height}. Recommandation : 768x768 minimum pour de meilleurs résultats.")
     
     # Gérer le seed
     if seed is None or seed == -1:

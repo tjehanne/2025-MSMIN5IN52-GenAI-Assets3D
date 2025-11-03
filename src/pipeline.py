@@ -28,7 +28,8 @@ def text_to_3d_pipeline(
     keep_intermediate=True,
     sd_model=None,
     seed=None,
-    negative_prompt=None
+    negative_prompt=None,
+    force_sdxl_settings=False
 ):
     """
     Pipeline complet : Texte -> Image 2D -> Modèle 3D
@@ -47,6 +48,7 @@ def text_to_3d_pipeline(
         sd_model (str): Nom ou chemin du modèle Stable Diffusion (None = modèle par défaut)
         seed (int): Seed pour la génération aléatoire (None ou -1 = seed aléatoire)
         negative_prompt (str): Ce que vous ne voulez PAS voir dans l'image (défauts à éviter)
+        force_sdxl_settings (bool): Si False, garde les paramètres personnalisés pour SDXL (défaut: False)
     
     Returns:
         dict: Chemins vers les fichiers générés
@@ -83,7 +85,8 @@ def text_to_3d_pipeline(
         model_name=sd_model,
         seed=seed,
         return_seed=True,
-        negative_prompt=negative_prompt
+        negative_prompt=negative_prompt,
+        force_sdxl_settings=force_sdxl_settings
     )
     image_time = time.time() - image_start
     
